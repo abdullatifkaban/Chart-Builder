@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Sanal ortamlar
+.venv/
+venv/
+env/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Not defteri artıkları
+.ipynb_checkpoints/
+
+# İşletim sistemi
+.DS_Store
+Thumbs.db
