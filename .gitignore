@@ -17,3 +17,6 @@ env/
 # İşletim sistemi
 .DS_Store
 Thumbs.db
+
+# Ajan yardımcıları
+.agents/

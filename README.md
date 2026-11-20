@@ -1,21 +1,19 @@
 # 📊 Grafik Atölyesi
 
-Veri Görselleştirme dersinin yardımcı aracı. Bir CSV ya da Excel dosyası
-yüklediğinde:
+Bir CSV ya da Excel dosyası yükleyip grafiği **adım adım kurmaya** yarayan
+bağımsız bir araç. Dosyayı yüklediğinde:
 
 1. dosyayı okuyup her sütunun türünü tahmin eder (sayısal, kategorik, metin,
-   tarih),
+   tarih) ve her türü ayrı sekmede özetler,
 2. o tabloyla çizilebilecek grafikleri listeler,
-3. aynı grafiği **pandas**, **matplotlib** ve **seaborn** ile ayrı ayrı çizer,
-4. her grafiğin **Python kodunu** gösterir ve satır satır açıklar,
-5. başlık, renk, palet, işaretçi, saydamlık gibi özellikleri değiştirmene izin
-   verir; kod anında buna göre yenilenir.
+3. grafiği **pandas**, **matplotlib** veya **seaborn** ile çizer,
+4. Python kodunu **adım adım büyüterek** yazar: her özellik koda yeni bir satır
+   ekler,
+5. seçtiğin sütunlarla grafiğin fiilen ne gösterdiğini veriden hesaplayıp
+   yorumlar.
 
 Amaç, "hazır grafik" vermek değil: ekranda gördüğün grafiği üreten kodu
-okuyup kendi defterine taşıyabilmen.
-
-Dersin kendisi ayrı bir depoda:
-[Data-Visualisation](https://github.com/abdullatifkaban/Data-Visualisation)
+adım adım okuyup kendi defterine taşıyabilmen.
 
 ## Kurulum
 
@@ -34,30 +32,115 @@ streamlit run app.py
 Tarayıcıda `http://localhost:8501` açılır. Sol panelden bir dosya yükle ya da
 depodaki `Data/` klasöründen bir örnek seç.
 
-## Neler var
+## Nasıl kullanılır?
 
-| Grafik | Ne için | Üç kütüphanede |
-|---|---|---|
-| Çizgi | Zaman içinde değişim, trend | ✔ |
-| Çubuk | Kategoriler arası büyüklük | ✔ |
-| Dağılım | İki sayısal değişken arası ilişki | ✔ |
-| Histogram | Tek değişkenin dağılımı | ✔ |
-| Kutu | Grupları dağılım açısından karşılaştırma | ✔ |
-| Isı haritası | Sayısal değişkenlerin korelasyonu | ✔ |
+Uygulama yukarıdan aşağıya şu bölümlerden oluşur.
 
-Her grafiğin yanında "ne zaman kullanılır" ve "dikkat" notları vardır; bunlar
-ders içeriğindeki ilkelerle aynıdır (kesik eksen, aşırı renk, kalabalık grafik,
-korelasyon ≠ nedensellik gibi).
+### Veriyi tanı
 
-Özelleştirilebilen parametreler: başlık, x/y eksen etiketi, tek renk, renk
-paleti, renk haritası, işaretçi (marker), çizgi kalınlığı, nokta boyu,
-saydamlık, ızgara, gösterge, sıralama, özetleme (ortalama/toplam/medyan/satır
-sayısı), bins, yoğunluk eğrisi (kde), seaborn teması ve şekil boyutu.
-Seçenekler grafik türüne göre otomatik filtrelenir.
+Dosya okunduğunda her sütun bir türe ayrılır ve dört sekmede özetlenir:
+
+| Sekme | Gösterdiklerin |
+|---|---|
+| Sayısal | dolu/eksik, benzersiz, ortalama, medyan, std, min, maks |
+| Kategorik | benzersiz, eksik, en sık değer ve sıklığı |
+| Metin | benzersiz, ortalama uzunluk, örnek değerler |
+| Tarih | en erken ve en geç tarih |
+
+Tahmin yanlışsa **Sütun türlerini düzelt** bölümünden değiştir. İstatistikler
+ve grafik seçenekleri anında güncellenir.
+
+### Kütüphane ve grafik türü
+
+Sol panelde sırayla:
+
+1. **Kütüphane:** pandas, matplotlib veya seaborn. Kod, seçtiğin kütüphanenin
+   sözdizimiyle yazılır.
+2. **Grafik türü:** verinle çizilebilen türler listelenir. Seçilen kütüphanede
+   olmayan türler listede görünmez.
+3. **Eksenler:** x, y ve isteğe bağlı renkle ayırma (hue). x için seçtiğin
+   sütun y listesinde çıkmaz.
+
+### Özellikleri tek tek aç
+
+Sol panelin **Özellikler** bölümünde her seçenek bir onay kutusudur. Hiçbirini
+işaretlemezsen kod tek satır kalır:
+
+```python
+df.plot(x='ay', y='adet', kind='line')
+```
+
+Başlık açtığında iki satır olur, sonra x/y etiketi, renk, işaretçi, ızgara,
+şekil boyutu… Kod ve önizleme aynı anda yenilenir:
+
+```python
+df.plot(x='ay', y='adet', kind='line', marker='o', color='#4C72B0')
+
+plt.title('Aylık satış')
+plt.xlabel('Ay')
+plt.ylabel('Adet')
+```
+
+Seçenekler grafik türüne göre filtrelenir; örneğin `bins` yalnızca histogramda,
+`cmap` yalnızca ısı haritasında görünür.
+
+### Kodu oku
+
+**Kodu adım adım yaz** başlığı altında beş bölüm vardır:
+
+1. **Sabit giriş satırları** — kütüphane importları ve veriyi okuma. Dosya adı
+   yüklediğin dosyadan gelir; Excel yüklediysen okuma satırı kendiliğinden
+   `pd.read_excel(...)` olur.
+2. **Grafik kodu** — yalnızca grafiği üreten, adım adım büyüyen satırlar.
+3. **Grafik önizleme** — kodun canlı çıktısı.
+4. **Tam kod (kopyalamaya hazır)** — giriş + grafik kodu tek blokta; indirme
+   düğmesi de burada.
+5. **Öğretim alanı** — aşağıdaki dört katman.
+
+### Öğretim alanı
+
+1. **Bu grafik ne için kullanılır?** — seçtiğin sütunlarla kurulan amaç
+   cümlesi ve grafik türünün uygun olduğu durumlar.
+2. **Seçtiğin sütunlarla bu grafik ne gösteriyor?** — yüklenen veriden
+   hesaplanan yorum. Örneğin:
+   - "`ay` boyunca `adet` ortalaması 385 → 349; genel eğilim azalıyor."
+   - "En yüksek ortalama İstanbul (461), en düşük İzmir (289). Fark yaklaşık
+     %59.7."
+   - "`birim_fiyat` ile `adet` arasındaki korelasyon r = 0.46 (orta, pozitif)."
+
+   Sütun ya da ayar değişince bu cümleler yenilenir.
+3. **Nasıl okunur? / Dikkat** — grafiği yorumlama ilkeleri ve tuzaklar (kesik
+   eksen, korelasyon ≠ nedensellik, bins seçimi, az gözlemde keman vb.).
+4. **Koddaki komutlar** — o kodda geçen komutların tek satırlık açıklamaları,
+   temelden ayrıntıya sıralı.
+
+## Desteklenen grafikler
+
+| Grafik | pandas | matplotlib | seaborn |
+|---|---|---|---|
+| Çizgi | ✔ | ✔ | ✔ |
+| Basamak | ✔ | ✔ | ✔ |
+| Alan | ✔ | ✔ | – |
+| Çubuk (dikey/yatay) | ✔ | ✔ | ✔ |
+| Yığılmış çubuk | ✔ | ✔ | – |
+| Pasta | ✔ | ✔ | – |
+| Dağılım | ✔ | ✔ | ✔ |
+| Histogram | ✔ | ✔ | ✔ |
+| Kutu | ✔ | ✔ | ✔ |
+| Keman | – | ✔ | ✔ |
+| Isı haritası | ✔ (Styler) | ✔ | ✔ |
+
+Ortak özellikler (başlık, eksen etiketleri, tek renk, saydamlık, palet, ızgara,
+45° etiket, gösterge, şekil boyutu, seaborn teması) dışında türe özel
+seçenekler de vardır: çizgi biçimi ve basamak konumu, alan yığma, yatay çubuk ve
+değer etiketleri, yığını %100'e normalize etme, pasta yüzdesi/başlangıç
+açısı/patlama/gölge, histogramda bins/kde/kümülatif/yoğunluk, kutuda ortalama ve
+aykırı değer denetimi, kemanda iç gösterim ve kesme, ısı haritasında üst üçgen
+maskesi, hücre çizgileri ve renk çubuğu.
 
 ## Sütun türü tanıma nasıl çalışıyor?
 
-Tahmin üç sinyale dayanır:
+Tahmin dört sinyale dayanır:
 
 - **pandas türü:** sayı, metin, tarih.
 - **Benzersiz değer oranı:** bir metin sütununda az sayıda farklı değer varsa
@@ -67,8 +150,19 @@ Tahmin üç sinyale dayanır:
 - **Sayı görünümlü metin:** Türkçe ondalık virgülü (`12,5`) taşıyan sütunlar
   sayısal tanınır.
 
-Türler yanlış tahmin edilirse tablodaki **Tür** sütunundan değiştirilebilir.
-Grafik seçenekleri anında buna göre güncellenir.
+Türler yanlış tahmin edilirse tablodaki **Tür** sütunundan değiştirilebilir;
+grafik seçenekleri anında buna göre güncellenir.
+
+## Örnek veriler
+
+`Data/` klasöründe dört veri seti var:
+
+| Dosya | İçerik |
+|---|---|
+| `kahve-satis.csv` | ay, şehir, ürün, adet, birim fiyat |
+| `anket-verisi.csv` | eksik ve tutarsız değerler içeren anket verisi |
+| `ogrenci-aliskanliklari.csv` | öğrenci alışkanlıkları ve vize notu |
+| `korona-vaka.csv` | ülke bazında günlük vaka sayıları (geniş format) |
 
 ## Klasör yapısı
 
@@ -78,17 +172,16 @@ Chart-Builder/
 ├── requirements.txt
 ├── README.md
 ├── LICENSE
-├── Data/             derslerdeki dört örnek veri seti
+├── Data/             dört örnek veri seti
 └── cb/
-    ├── loader.py     CSV/Excel okuma
-    ├── detect.py     sütun türü tanıma ve dönüştürme
-    ├── charts.py     grafik kodu üretimi ve çalıştırma
-    └── kilavuz.py    grafik başına öğretim notları
+    ├── loader.py       CSV/Excel okuma
+    ├── detect.py       sütun türü tanıma ve dönüştürme
+    └── grafik_kodu.py  kod üretimi, çalıştırma ve yorumlar
 ```
 
-`charts.py` şu sırayla çalışır: **önce kodu üretir, sonra kodu çalıştırıp
-grafiği çizer.** Böylece ekranda gördüğün grafik ile kopyaladığın kod birebir
-aynı işi yapar.
+`grafik_kodu.py` kodu iki amaçla üretir: **göstermek** (kopyalanabilir tam kod) ve
+**çalıştırmak** (önizleme). Ekranda gördüğün grafik ile kopyaladığın kod aynı
+kaynaktan geldiği için birebir aynı işi yapar.
 
 ## Yayınlama
 
@@ -105,15 +198,25 @@ tutar.
 
 ## Sınırlar
 
-- Isı haritasında pandas'ın hazır bir çizimi yoktur; pandas sekmesi aynı
-  bilgiyi **renklendirilmiş tablo** (Styler) olarak verir. Gerçek ısı haritası
-  için matplotlib veya seaborn sekmesini kullan.
-- Kutu grafiğinde pandas, otomatik bir üst başlık ekler; üretilen kod bunu
-  `fig.suptitle('')` ile temizler.
-- Serbest metin sütunları (ad, not, açıklama) eksen olarak sunulmaz; bunlar
-  grafik için uygun değildir.
+- Isı haritasında pandas'ın hazır bir çizimi yoktur; pandas seçildiğinde aynı
+  bilgi **renklendirilmiş tablo** (Styler) olarak verilir. Gerçek ısı haritası
+  için matplotlib veya seaborn seç.
+- Kutu grafiğinde pandas otomatik bir üst başlık ekler; üretilen kod bunu
+  `plt.suptitle('')` ile temizler.
+- Serbest metin sütunları (ad, not, açıklama) eksen olarak sunulmaz; grafik
+  için uygun değildir.
+- Seaborn'da pasta, alan ve yığılmış çubuk yoktur; pandas'ta keman grafiği
+  yoktur. Bu türler ilgili kütüphane seçildiğinde listede görünmez.
+- Yığılmış çubuk için ikinci bir kategorik sütun (hue) gerekir.
 - `.xls` (eski Excel) okumak için `xlrd` gerekir; `requirements.txt` içinde
   yok. Gerekirse `pip install xlrd`.
+
+## İlgili kaynak
+
+Veri görselleştirmeyi bir bütün olarak ele alan ayrı bir ders deposu var. Bu
+araç ondan bağımsız çalışır; konuyla ilgini çekerse oraya da bakabilirsin:
+
+[Veri Görselleştirme](https://github.com/abdullatifkaban/Data-Visualisation)
 
 ## Lisans
 
